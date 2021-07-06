@@ -53,9 +53,8 @@ local function connectEvent(callback)
     end
 end
 
-setReadOnly(gmt, false)
-
-gmt.__namecall = newCClosure(function(instance, ...)
+local old
+old = hookmetamethod(game, "__namecall", function(instance, ...)
     if not checkCaller() and remotesViewing[instance.ClassName] and instance ~= remoteDataEvent and remoteMethods[getNamecallMethod()] then
         local remote = currentRemotes[instance]
         local vargs = {...}
@@ -86,7 +85,7 @@ gmt.__namecall = newCClosure(function(instance, ...)
         end
     end
 
-    return nmc(instance, ...)
+    return old(instance, ...)
 end)
 
 for _name, hook in pairs(methodHooks) do
